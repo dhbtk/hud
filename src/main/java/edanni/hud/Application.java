@@ -30,9 +30,9 @@ public class Application extends javafx.application.Application
         log.debug( "Showing JFX scene" );
         Scene scene = new Scene( rootNode, 800, 480 );
         scene.getStylesheets().add( "/styles/styles.css" );
-
         stage.setTitle( "HUD" );
         stage.setScene( scene );
+        controller.runToMaxAndBack();
         stage.show();
     }
 }
