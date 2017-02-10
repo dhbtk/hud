@@ -18,4 +18,6 @@ public interface MusicControls
     void increaseVolume();
 
     void decreaseVolume();
+
+    void shutdown();
 }

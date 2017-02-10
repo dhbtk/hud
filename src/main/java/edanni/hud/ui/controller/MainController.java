@@ -1,5 +1,8 @@
 package edanni.hud.ui.controller;
 
+import edanni.hud.infrastructure.controls.MusicControls;
+import edanni.hud.infrastructure.controls.MusicDisplay;
+import edanni.hud.infrastructure.controls.OBDIIDisplay;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.canvas.Canvas;
@@ -13,7 +16,7 @@ import javafx.scene.text.FontSmoothingType;
 /**
  * Created by eduardo on 24/01/17.
  */
-public class MainController
+public class MainController implements MusicDisplay, OBDIIDisplay
 {
     private static final int MAX_RPM = 7000;
     private static final int MAX_WIDTH = 700;
@@ -27,9 +30,13 @@ public class MainController
     @FXML
     private TextField rpmField;
 
+    private MusicControls musicControls;
+
     private Image[] sevenSegmentImages = new Image[10];
 
     private int oldRpm = 0;
+    private int rpm = 0;
+    private int speed = 0;
 
     public MainController()
     {
@@ -208,11 +215,23 @@ public class MainController
         new Thread( () ->
         {
             final int MAX = 2000;
+            final int MIDDLE = MAX / 2;
             // 5 ms per iteration, 1s in total
             for ( int i = 0; i <= MAX; i += 5 )
             {
-                double rpm = Math.sin( ((double) i) / MAX * Math.PI ) * MAX_RPM;
-                double speed = Math.sin( ((double) i) / MAX * Math.PI ) * 300;
+//                double rpm = Math.sin( ((double) i) / MAX * Math.PI ) * MAX_RPM;
+//                double speed = Math.sin( ((double) i) / MAX * Math.PI ) * 300;
+                double rpm, speed;
+                if ( i <= MIDDLE )
+                {
+                    rpm = (((double) i) / MIDDLE) * MAX_RPM;
+                    speed = (((double) i) / MIDDLE) * 300;
+                }
+                else
+                {
+                    rpm = (1 - (((double) i - MIDDLE) / MIDDLE)) * MAX_RPM;
+                    speed = (1 - (((double) i - MIDDLE) / MIDDLE)) * 300;
+                }
                 Platform.runLater( () -> drawRPMAndSpeed( (int) rpm, (int) speed ) );
                 try
                 {
@@ -225,5 +244,47 @@ public class MainController
             }
             Platform.runLater( () -> drawRPMAndSpeed( 0, 0 ) );
         } ).start();
+    }
+
+    @Override
+    public void setFolder( String folder )
+    {
+
+    }
+
+    @Override
+    public void setSongInfo( String artist, String track, String album )
+    {
+
+    }
+
+    @Override
+    public void setPlayStatus( PlayStatus playStatus )
+    {
+
+    }
+
+    public MusicControls getMusicControls()
+    {
+        return musicControls;
+    }
+
+    public void setMusicControls( MusicControls musicControls )
+    {
+        this.musicControls = musicControls;
+    }
+
+    @Override
+    public void setRPM( int rpm )
+    {
+        this.rpm = rpm;
+        Platform.runLater( () -> drawRPMAndSpeed( this.rpm, this.speed ) );
+    }
+
+    @Override
+    public void setSpeed( int speed )
+    {
+        this.speed = speed;
+        Platform.runLater( () -> drawRPMAndSpeed( this.rpm, this.speed ) );
     }
 }

@@ -1,5 +1,6 @@
 package edanni.hud;
 
+import edanni.hud.domain.service.OBDIIService;
 import edanni.hud.ui.controller.MainController;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -10,12 +11,16 @@ import org.slf4j.LoggerFactory;
 
 public class Application extends javafx.application.Application
 {
-
     private static final Logger log = LoggerFactory.getLogger( Application.class );
+
+    private static OBDIIService obdiiService;
+    private static String fileName;
 
     public static void main( String[] args ) throws Exception
     {
+        fileName = args.length == 1 ? args[0] : "/dev/pts/2";
         launch( args );
+        obdiiService.close();
     }
 
     public void start( Stage stage ) throws Exception
@@ -32,7 +37,10 @@ public class Application extends javafx.application.Application
         scene.getStylesheets().add( "/styles/styles.css" );
         stage.setTitle( "HUD" );
         stage.setScene( scene );
-        controller.runToMaxAndBack();
+//        controller.runToMaxAndBack();
+//        controller.setMusicControls( new MusicService( Paths.get( "/home/eduardo/Music" ), controller ) );
+        obdiiService = new OBDIIService( fileName, controller );
+        new Thread( obdiiService ).start();
         stage.show();
     }
 }
