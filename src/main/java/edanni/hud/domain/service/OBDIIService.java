@@ -32,18 +32,14 @@ public class OBDIIService implements Runnable, Closeable
     {
         int timer = 0;
         LOG.info( "Starting up" );
+        send( "ATZ" );
+        send( "ATSP0" );
         while ( !closed )
         {
-            if ( timer == 5000 )
+            if ( timer == 1000 )
             {
                 timer = 0;
                 LOG.info( "Resetting" );
-            }
-
-            if ( timer == 0 )
-            {
-                // send ATZ
-                send( "ATZ" );
             }
 
             if ( timer % 50 == 0 )
@@ -63,8 +59,7 @@ public class OBDIIService implements Runnable, Closeable
             }
             catch ( IOException e )
             {
-                LOG.error( "deu erro" );
-                e.printStackTrace();
+                attemptReopen();
             }
             try
             {
